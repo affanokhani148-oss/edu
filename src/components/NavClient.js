@@ -25,7 +25,9 @@ export default function NavClient() {
           <div>{currentDate || 'Loading date...'}</div>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <DarkModeToggle />
-            <Link href="/login" style={{ color: 'var(--color-primary)', fontWeight: 700 }}>LOGIN</Link>
+            <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-primary)', fontWeight: 700, padding: '0.4rem 1rem', border: '1px solid var(--color-primary)', borderRadius: 'var(--radius-full)', textDecoration: 'none', transition: 'all 0.2s' }} onMouseOver={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-primary)'; e.currentTarget.style.color = '#fff'; }} onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-primary)'; }}>
+              👤 Sign In
+            </Link>
           </div>
         </div>
 
