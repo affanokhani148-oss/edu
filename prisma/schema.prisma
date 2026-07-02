@@ -1,0 +1,172 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  password    String
+  role        String   @default("STUDENT")
+  name        String?
+  phone       String?
+  profilePic  String?
+  joiningDate DateTime @default(now())
+
+  accesses    UserAccess[]
+  attempts    QuizAttempt[]
+  messages    Message[]     @relation("UserMessages")
+  reviews     Review[]
+  articles    Article[]
+}
+
+model Community {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  description  String?
+  icon         String?
+  price        Int      @default(500)
+  featuresJson String   @default("[]") // Array of strings
+  color        String   @default("var(--accent-primary)")
+  isPublic     Boolean  @default(true) // Whether to show on homepage
+
+  articles    Article[]
+  quizzes     Quiz[]
+  userAccess  UserAccess[]
+}
+
+model UserAccess {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  communityId Int
+  grantedAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  accessFrom  DateTime?
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, communityId])
+}
+
+model Article {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  title       String
+  description String
+  contentHtml String
+  imageUrl    String?
+  published   Boolean   @default(false)
+  isPublic    Boolean   @default(true) // default TRUE — articles show publicly
+  isApproved  Boolean   @default(true) // true for admin, false for columnist pending
+  sequence    Int       @default(0)    // sequence of the day
+  views       Int       @default(0)    // public view tracking
+  publishedAt DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  authorId    Int?
+  author      User?      @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  communityId Int?
+  community   Community? @relation(fields: [communityId], references: [id], onDelete: SetNull)
+}
+
+model Quiz {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  timeLimit   Int?
+  activeFrom  DateTime?
+  activeTo    DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  isResultPublished Boolean   @default(false)
+
+  communities Community[]
+
+  questions   Question[]
+  attempts    QuizAttempt[]
+  leaderboard Leaderboard[]
+}
+
+model Question {
+  id            Int      @id @default(autoincrement())
+  quizId        Int
+  text          String
+  optionsJson   String
+  correctIndex  Int
+  explanation   String?
+
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  quizId        Int
+  score         Int
+  totalScore    Int
+  answersJson   String
+  timeTaken     Int?     // seconds
+  completedAt   DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+// Admin publishes top 3 of the day
+model Leaderboard {
+  id          Int      @id @default(autoincrement())
+  quizId      Int
+  date        String   // "YYYY-MM-DD"
+  topJson     String   // JSON array of {rank, name, score, totalScore}
+  isPublished Boolean  @default(false)
+  publishedAt DateTime @default(now())
+
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+// Student/visitor sends message to admin
+model Message {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  guestName   String?  // for non-logged-in visitors
+  guestEmail  String?
+  content     String?
+  imageUrl    String?
+  senderRole  String   @default("STUDENT") // "STUDENT" or "ADMIN"
+  isRead      Boolean  @default(false)
+  sentAt      DateTime @default(now())
+
+  user        User?    @relation("UserMessages", fields: [userId], references: [id], onDelete: SetNull)
+}
+
+// Public testimonials/reviews
+model Review {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  name        String   // display name
+  rating      Int      // 1-5
+  content     String
+  isApproved  Boolean  @default(false) // admin must approve before public display
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+// Key-Value store for dynamic global settings (Colors, Text)
+model SiteSetting {
+  key   String @id
+  value String
+}
+
+// Analytics and Traffic Tracking
+model SiteTraffic {
+  date  String @id // "YYYY-MM-DD"
+  views Int    @default(0)
+}

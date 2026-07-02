@@ -1,0 +1,64 @@
+:root {
+  /* Newspaper Color Palette (Dawn.com inspired) */
+  --color-primary: #C00000;      /* Classic News Red */
+  --color-secondary: #000000;    /* Solid Black */
+  --color-background: #FFFFFF;   /* Pure White */
+  --color-card: #FFFFFF;
+  --color-success: #228B22;      /* Forest Green */
+  --color-warning: #D2691E;      /* Chocolate / Orange */
+  --color-danger: #C00000;
+  
+  --color-text-primary: #111111; /* Almost black */
+  --color-text-secondary: #555555;
+  --color-text-muted: #888888;
+  
+  --color-border: #000000;       /* Thick sharp black borders for grids */
+  --color-border-light: #CCCCCC; /* Thinner subtle borders */
+  --color-hover: #F0F0F0; 
+
+  /* Typography */
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Merriweather', 'Georgia', 'Playfair Display', serif; /* Classic Newspaper Serif */
+
+  /* Radii - Newspapers don't use rounded corners */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-full: 0px;
+
+  /* Shadows - Flat design, no shadows */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+
+  /* Transitions */
+  --transition: 0.2s ease;
+}
+
+/* Dark mode overrides (Night Edition) */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    --color-background: #111111;
+    --color-card: #111111;
+    --color-text-primary: #EEEEEE;
+    --color-text-secondary: #BBBBBB;
+    --color-text-muted: #888888;
+    --color-border: #EEEEEE;
+    --color-border-light: #444444;
+    --color-hover: #222222;
+    --color-secondary: #FFFFFF;
+  }
+}
+
+html[data-theme='dark'] {
+  --color-background: #111111;
+  --color-card: #111111;
+  --color-text-primary: #EEEEEE;
+  --color-text-secondary: #BBBBBB;
+  --color-text-muted: #888888;
+  --color-border: #EEEEEE;
+  --color-border-light: #444444;
+  --color-hover: #222222;
+  --color-secondary: #FFFFFF;
+}
