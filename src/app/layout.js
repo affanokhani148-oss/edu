@@ -11,7 +11,7 @@ export const metadata = {
   description: 'Daily editorials, GRE words, idioms, pair of words, essay notes & daily quizzes.',
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Revalidate settings every 60 seconds to allow static build of _not-found
 
 export default async function RootLayout({ children }) {
   let settings = [];
