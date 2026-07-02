@@ -11,8 +11,15 @@ export const metadata = {
   description: 'Daily editorials, GRE words, idioms, pair of words, essay notes & daily quizzes.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function RootLayout({ children }) {
-  const settings = await prisma.siteSetting.findMany();
+  let settings = [];
+  try {
+    settings = await prisma.siteSetting.findMany();
+  } catch (error) {
+    console.warn("Could not fetch site settings during build phase.");
+  }
   const s = settings.reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {});
 
   const dynamicCss = `
