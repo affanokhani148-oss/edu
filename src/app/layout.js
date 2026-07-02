@@ -5,6 +5,7 @@ import { prisma } from '../lib/prisma';
 import NavClient from '../components/NavClient';
 import FooterClient from '../components/FooterClient';
 import SecurityEnforcer from '../components/SecurityEnforcer';
+import { getSession } from '../lib/auth';
 
 export const metadata = {
   title: 'EduPro — Premium Study Community',
@@ -14,6 +15,8 @@ export const metadata = {
 export const revalidate = 60; // Revalidate settings every 60 seconds to allow static build of _not-found
 
 export default async function RootLayout({ children }) {
+  const session = await getSession();
+  
   let settings = [];
   try {
     settings = await prisma.siteSetting.findMany();
@@ -45,7 +48,7 @@ export default async function RootLayout({ children }) {
       <body>
         <SecurityEnforcer />
         {s.customBodyHtml ? <div dangerouslySetInnerHTML={{ __html: s.customBodyHtml }} style={{ display: 'none' }} /> : null}
-        <NavClient />
+        <NavClient userSession={session} />
         <div className="container main-content">
           {children}
         </div>
