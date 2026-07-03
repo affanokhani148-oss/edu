@@ -83,7 +83,7 @@ export default async function ArticlePage({ params }) {
             <img
               src={article.imageUrl}
               alt={article.title}
-              style={{ width: '100%', height: 'auto', marginBottom: '2rem', border: '1px solid var(--color-border)' }}
+              style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', marginBottom: '2.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}
             />
           )}
 

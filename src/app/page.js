@@ -111,7 +111,7 @@ export default async function Home({ searchParams }) {
           {headlineArticle ? (
             <div className="news-article-card" style={{ borderBottom: 'none' }}>
               {headlineArticle.imageUrl && (
-                <img src={headlineArticle.imageUrl} alt={headlineArticle.title} style={{ width: '100%', height: 'auto', marginBottom: '1rem', border: '1px solid var(--color-border)' }} />
+                <img src={headlineArticle.imageUrl} alt={headlineArticle.title} style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', marginBottom: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }} />
               )}
               <h1 className="news-article-title" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>
                 <Link href={`/articles/${headlineArticle.slug}`}>{headlineArticle.title}</Link>
