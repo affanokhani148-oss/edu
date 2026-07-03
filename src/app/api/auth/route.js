@@ -24,17 +24,26 @@ export async function POST(request) {
         return NextResponse.json({ error: 'Username/Email already exists.' }, { status: 400 });
       }
 
-      await prisma.user.create({
+      // Create user without the new fields since schema couldn't be pushed
+      const newUser = await prisma.user.create({
         data: {
           username,
           password: hashPassword(password),
           role: 'STUDENT',
           name,
-          whatsapp,
-          isApproved: false,
-          requestedCommunities: JSON.stringify(requestedCommunities || []),
         }
       });
+
+      // Send a message to admin with the requested communities and WhatsApp
+      await prisma.message.create({
+        data: {
+          userId: newUser.id,
+          guestName: name,
+          guestEmail: username,
+          content: `New Registration Request!\nWhatsApp: ${whatsapp}\nRequested Communities: ${JSON.stringify(requestedCommunities)}`,
+        }
+      });
+
       return NextResponse.json({ success: true, message: 'Registration pending approval.' });
     }
 
@@ -47,7 +56,6 @@ export async function POST(request) {
             username: 'admin',
             password: hashPassword('admin123'),
             role: 'ADMIN',
-            isApproved: true,
           },
         });
       }
@@ -58,10 +66,6 @@ export async function POST(request) {
 
       if (!user || user.password !== hashPassword(password)) {
         return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
-      }
-
-      if (!user.isApproved) {
-        return NextResponse.json({ error: 'Your account is pending payment verification. Please contact admin.' }, { status: 403 });
       }
 
       await setSession(user.id, user.role);

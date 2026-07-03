@@ -14,11 +14,8 @@ model User {
   role        String   @default("STUDENT")
   name        String?
   phone       String?
-  profilePic           String?
-  joiningDate          DateTime @default(now())
-  isApproved           Boolean  @default(true) // Existing users stay true, new registrations false
-  requestedCommunities String?  // JSON array of community IDs requested
-  whatsapp             String?
+  profilePic  String?
+  joiningDate DateTime @default(now())
 
   accesses    UserAccess[]
   attempts    QuizAttempt[]

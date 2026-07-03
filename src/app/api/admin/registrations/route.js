@@ -9,10 +9,30 @@ export async function GET() {
   }
 
   try {
-    const pendingUsers = await prisma.user.findMany({
-      where: { isApproved: false },
-      orderBy: { joiningDate: 'desc' },
+    // Fetch messages that start with "New Registration Request!"
+    const regMessages = await prisma.message.findMany({
+      where: { content: { startsWith: 'New Registration Request!' } },
+      include: { user: true },
+      orderBy: { sentAt: 'desc' },
     });
+
+    const pendingUsers = regMessages.map(msg => {
+      // Parse content to get whatsapp and requestedCommunities
+      const parts = msg.content.split('\n');
+      const whatsapp = parts[1]?.replace('WhatsApp: ', '');
+      const reqCommRaw = parts[2]?.replace('Requested Communities: ', '');
+      
+      return {
+        id: msg.userId,
+        messageId: msg.id,
+        name: msg.guestName,
+        username: msg.guestEmail,
+        whatsapp,
+        requestedCommunities: reqCommRaw,
+        joiningDate: msg.sentAt,
+      };
+    });
+
     return NextResponse.json(pendingUsers);
   } catch (error) {
     console.error(error);
@@ -27,44 +47,38 @@ export async function POST(request) {
   }
 
   try {
-    const { userId, action } = await request.json();
-
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    const { userId, action, messageId } = await request.json();
 
     if (action === 'approve') {
+      const msg = await prisma.message.findUnique({ where: { id: messageId } });
+      if (!msg) return NextResponse.json({ error: 'Message not found' });
+
+      const parts = msg.content.split('\n');
+      const reqCommRaw = parts[2]?.replace('Requested Communities: ', '');
+      
       let requestedCommunityIds = [];
       try {
-        requestedCommunityIds = JSON.parse(user.requestedCommunities || '[]');
-      } catch (e) {
-        // invalid JSON
-      }
+        requestedCommunityIds = JSON.parse(reqCommRaw || '[]');
+      } catch (e) {}
 
-      // Create access for each requested community
       if (requestedCommunityIds.length > 0) {
         const accessData = requestedCommunityIds.map(communityId => ({
-          userId: user.id,
+          userId: parseInt(userId, 10),
           communityId: parseInt(communityId, 10),
         }));
 
         await prisma.userAccess.createMany({
           data: accessData,
-          skipDuplicates: true, // Just in case
+          skipDuplicates: true,
         });
       }
 
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          isApproved: true,
-          requestedCommunities: null, // clear it out
-        },
-      });
-
+      await prisma.message.delete({ where: { id: messageId } });
       return NextResponse.json({ success: true, message: 'User approved and access granted.' });
     }
 
     if (action === 'reject') {
+      await prisma.message.delete({ where: { id: messageId } });
       await prisma.user.delete({ where: { id: userId } });
       return NextResponse.json({ success: true, message: 'User rejected and deleted.' });
     }
