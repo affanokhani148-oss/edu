@@ -6,6 +6,7 @@ import DarkModeToggle from '../../components/DarkModeToggle';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: '📊', exact: true },
+  { href: '/admin/registrations', label: 'Registrations', icon: '🆕' },
   { href: '/admin/communities', label: 'Communities', icon: '🏢' },
   { href: '/admin/students', label: 'Students', icon: '🎓' },
   { href: '/admin/quizzes', label: 'Quizzes', icon: '❓' },

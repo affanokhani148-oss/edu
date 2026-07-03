@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -97,13 +98,13 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="divider" style={{ margin: '1.5rem 0' }} />
+          <div className="divider" style={{ margin: '1.5rem 0', height: '1px', background: 'var(--color-border)' }} />
 
-          <div style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            <p>Don&apos;t have an account? Contact admin after Easypaisa payment.</p>
-            <p style={{ marginTop: '0.4rem' }}>
-              💳 <strong style={{ color: 'var(--text-primary)' }}>0333985267</strong> — Syed Azam Shah
-            </p>
+          <div style={{ textAlign: 'center', fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+            <p>New here? Join our study communities.</p>
+            <Link href="/register" className="btn" style={{ marginTop: '0.8rem', padding: '0.6rem 1.5rem', borderRadius: 'var(--radius-full)', fontWeight: 700, color: 'var(--color-primary)', border: '1px solid var(--color-primary)' }}>
+              Create an Account
+            </Link>
           </div>
         </div>
       </div>
