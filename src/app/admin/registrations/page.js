@@ -22,14 +22,14 @@ export default function RegistrationsPage() {
     setLoading(false);
   };
 
-  const handleAction = async (userId, messageId, action) => {
+  const handleAction = async (userId, action) => {
     if (action === 'reject' && !confirm('Are you sure you want to completely delete this user registration?')) return;
     
     try {
       const res = await fetch('/api/admin/registrations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, messageId, action })
+        body: JSON.stringify({ userId, action })
       });
       if (res.ok) {
         fetchUsers();
@@ -84,10 +84,10 @@ export default function RegistrationsPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button onClick={() => handleAction(user.id, user.messageId, 'approve')} className="btn btn-primary" style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}>
+                  <button onClick={() => handleAction(user.id, 'approve')} className="btn btn-primary" style={{ backgroundColor: '#10b981', borderColor: '#10b981' }}>
                     ✅ Approve
                   </button>
-                  <button onClick={() => handleAction(user.id, user.messageId, 'reject')} className="btn" style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)' }}>
+                  <button onClick={() => handleAction(user.id, 'reject')} className="btn" style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)' }}>
                     ❌ Reject
                   </button>
                 </div>

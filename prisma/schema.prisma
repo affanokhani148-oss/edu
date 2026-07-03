@@ -14,8 +14,11 @@ model User {
   role        String   @default("STUDENT")
   name        String?
   phone       String?
-  profilePic  String?
-  joiningDate DateTime @default(now())
+  profilePic           String?
+  joiningDate          DateTime @default(now())
+  isApproved           Boolean  @default(true)
+  requestedCommunities String?
+  whatsapp             String?
 
   accesses    UserAccess[]
   attempts    QuizAttempt[]

@@ -3,20 +3,11 @@ import { prisma } from '../../../lib/prisma';
 import { getSession } from '../../../lib/auth';
 
 export async function GET(request) {
-  try {
-    const communities = await prisma.community.findMany({
-      orderBy: { name: 'asc' }
-    });
-    return NextResponse.json(communities);
-  } catch (error) {
-    console.error("Prisma Error: Falling back to dummy communities.");
-    const fallbackCommunities = [
-      { id: 1, name: "CSS Exclusive Preparation", description: "Complete CSS notes and video lectures", price: 5000, isPublic: true },
-      { id: 2, name: "PMS Mastery", description: "Comprehensive PMS course material", price: 3500, isPublic: true },
-      { id: 3, name: "Daily Quiz Access", description: "Compete with top students daily", price: 500, isPublic: true }
-    ];
-    return NextResponse.json(fallbackCommunities);
-  }
+  // Public route so the register page can load communities
+  const communities = await prisma.community.findMany({
+    orderBy: { name: 'asc' }
+  });
+  return NextResponse.json(communities);
 }
 
 export async function POST(request) {
